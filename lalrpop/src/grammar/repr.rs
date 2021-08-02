@@ -107,6 +107,7 @@ pub enum LrCodeGeneration {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Parameter {
+    pub mutable: bool,
     pub name: Atom,
     pub ty: TypeRepr,
 }
@@ -506,7 +507,7 @@ impl Display for WhereClause {
 
 impl Display for Parameter {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
-        write!(fmt, "{}: {}", self.name, self.ty)
+        write!(fmt, "{}{}: {}", if self.mutable { "mut " } else { "" }, self.name, self.ty)
     }
 }
 

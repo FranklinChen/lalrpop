@@ -91,7 +91,7 @@ GrammarParameters: Vec<Parameter> =
     "(" <Comma<GrammarParameter>> ")";
 
 GrammarParameter: Parameter =
-    <id:Id> ":" <ty:TypeRef> => Parameter { name: id, ty };
+    <m:"mut"?> <id:Id> ":" <ty:TypeRef> => Parameter { mutable: m.is_some(), name: id, ty };
 
 GrammarItem: GrammarItem = {
     Use,

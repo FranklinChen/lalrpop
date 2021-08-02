@@ -1575,13 +1575,14 @@ impl MachineParameters {
         let fields: Vec<_> = grammar
             .parameters
             .iter()
-            .map(|Parameter { name, ty }| {
+            .map(|Parameter { mutable, name, ty }| {
                 let named_ty = ty.name_anonymous_lifetimes_and_compute_implied_outlives(
                     &grammar.prefix,
                     &mut type_parameters,
                     &mut where_clauses,
                 );
                 Parameter {
+                    mutable: *mutable,
                     name: name.clone(),
                     ty: named_ty,
                 }

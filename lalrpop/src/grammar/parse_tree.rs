@@ -361,6 +361,7 @@ pub enum TypeParameter {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Parameter {
+    pub mutable: bool,
     pub name: Atom,
     pub ty: TypeRef,
 }

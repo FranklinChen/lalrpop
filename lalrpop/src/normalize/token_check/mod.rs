@@ -418,6 +418,7 @@ fn construct(grammar: &mut Grammar, match_block: MatchBlock) -> NormResult<()> {
         .insert(0, TypeParameter::Lifetime(input_lifetime.clone()));
 
     let parameter = Parameter {
+        mutable: false,
         name: input_parameter,
         ty: TypeRef::Ref {
             lifetime: Some(input_lifetime),

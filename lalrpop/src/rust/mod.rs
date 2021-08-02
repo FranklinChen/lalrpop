@@ -269,6 +269,6 @@ impl ParameterDisplay for String {
 
 impl<'me> ParameterDisplay for &'me repr::Parameter {
     fn to_parameter_string(self) -> String {
-        format!("{}: {}", self.name, self.ty)
+        format!("{}{}: {}", if self.mutable { "mut " } else { "" }, self.name, self.ty)
     }
 }

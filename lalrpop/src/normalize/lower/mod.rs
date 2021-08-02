@@ -155,6 +155,7 @@ impl<'s> LowerState<'s> {
             .parameters
             .iter()
             .map(|p| r::Parameter {
+                mutable: p.mutable,
                 name: p.name.clone(),
                 ty: p.ty.type_repr(),
             })
