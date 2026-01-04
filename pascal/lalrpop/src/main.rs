@@ -1,6 +1,4 @@
-#[macro_use]
-extern crate lalrpop_util;
-extern crate pico_args;
+use lalrpop_util::lalrpop_mod;
 
 use std::ffi::OsString;
 use std::fs::File;
@@ -12,7 +10,7 @@ use pico_args::Arguments;
 
 lalrpop_mod!(pascal);
 
-const USAGE: &'static str = "
+const USAGE: &str = "
 Usage: pascal <inputs>...
 
 Parses each input file.
@@ -37,7 +35,7 @@ fn main() {
     let args = parse_args(Arguments::from_env()).unwrap();
 
     if args.flag_help {
-        println!("{}", USAGE);
+        println!("{USAGE}");
         return;
     }
 
@@ -52,7 +50,7 @@ fn main() {
         let time_stamp = Instant::now();
         let result = pascal::fileParser::new().parse(&s);
         let elapsed = time_stamp.elapsed();
-        let elapsed = elapsed.as_secs() as f64 + elapsed.subsec_nanos() as f64 / 1000_000_000.0;
+        let elapsed = elapsed.as_secs() as f64 + elapsed.subsec_nanos() as f64 / 1_000_000_000.0;
 
         match result {
             Ok(()) => println!("Input `{}` ({}s): OK", input.display(), elapsed),

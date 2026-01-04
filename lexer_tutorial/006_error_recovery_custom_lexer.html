@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Controlling the lexer</title>
+        <title>Error recovery with custom lexer</title>
 
 
         <!-- Custom HTML head -->
@@ -177,26 +177,92 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="fine-control-over-the-lexer"><a class="header" href="#fine-control-over-the-lexer">Fine control over the lexer</a></h1>
-<p>This part is about controlling the inner workings of LALRPOP's built-in lexer
-generator and using your own hand written parser.</p>
-<ul>
-<li><a href="001_lexer_gen.html">LALRPOP's lexer generator</a></li>
-<li><a href="002_raw_delimited_content.html">Lexing raw delimited content</a></li>
-<li><a href="003_writing_custom_lexer.html">Writing a custom lexer</a></li>
-<li><a href="004_token_references.html">Using tokens with references</a></li>
-<li><a href="005_external_lib.html">Using an external library</a></li>
-</ul>
+                        <h1 id="error-recovery-with-a-custom-lexer"><a class="header" href="#error-recovery-with-a-custom-lexer">Error recovery with a custom lexer</a></h1>
+<p>Features described in
+<a href="https://lalrpop.github.io/lalrpop/tutorial/008_error_recovery.html">Error recovery</a>
+work well with the custom lexer, however error recovery only supports
+recovering from parser errors - not lexer errors.  This page shows an approach
+to recover from lexer errors.</p>
+<p>Enable error recovery:</p>
+<pre><code class="language-diff">use lalrpop_util::ErrorRecovery;
+
+- grammar&lt;'err&gt;(errors: &amp;'err mut Vec&lt;ErrorRecovery&lt;usize, Token&lt;'input&gt;, &amp;'static str&gt;&gt;);
++ grammar&lt;'err&gt;(errors: &amp;'err mut Vec&lt;ErrorRecovery&lt;usize, Token, LexicalError&gt;&gt;);
+</code></pre>
+<p>Now error recovery will work for parser errors, however if your lexer
+encounters an unexpected token, that's a <em>lexer</em> error, not a <em>parser</em> error
+so the parser is unable to recover from it.</p>
+<pre><code class="language-plaintext">print (a - $);
+
+// Err(User { error: InvalidToken })
+</code></pre>
+<p>It's caused by the inconsistency in the lexer stream, as lalrpop parser
+always expects a normal token stream. To fix this, you need to add a
+workaround in the lexer part to process the "error recovery" inside
+the lexer, for example</p>
+<pre><code class="language-diff">impl&lt;'input&gt; Iterator for Lexer&lt;'input&gt; {
+    type Item = Spanned&lt;Token, usize, LexicalError&gt;;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        self.token_stream
+        .next()
+-       .map(|(token, span)| Ok((span.start, token?, span.end)))
++       .map(|(token, span)|
++           match token {
++               Ok(token) =&gt; Ok((span.start, token, span.end)),
++               Err(_) =&gt; Ok((span.start, Token::Error, span.end)),
++               // or specify your lexical error to parse error
++           }
++       )
+    }
+}
+</code></pre>
+<p>and then put a new member into <code>Token</code> enum to represent the error token
+(or your custom error type).</p>
+<pre><code class="language-diff">pub enum Token {
+    //...
+
+    // Dont forget the comma
++   Error
+}
+</code></pre>
+<p>Also update the extern block in <code>grammar.lalrpop</code>.</p>
+<pre><code class="language-diff">extern {
+      type Location = usize;
+      type Error = LexicalError;
+
+      enum Token {
++         "error" =&gt; Token::Error,
+</code></pre>
+<p>Like NaN is a number in JavaScript, we have now an <code>Token::Error</code> which is
+a token in our lexer.  This token can be passed to the parser, but if it is
+not used in the parser grammar, will not parse.  That transforms the lexer
+error into a recoverable parser error allowing you to have error recovery in
+this case.</p>
+<p>Also, you might need to custom your own error, visit the section on fallible
+actions for details.</p>
+<pre><code class="language-lalrpop">! =&gt; {
+    let error = ErrorRecovery {
+        error: ParseError::User {
+            error: LexicalError::SomeCustomError,
+        },
+        dropped_tokens: Vec::new(), // or specify the dropped tokens
+    };
+    errors.push(error);
+
+    Expression::Error
+}
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../tutorial/009_state_parameter.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../lexer_tutorial/005_external_lib.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../lexer_tutorial/001_lexer_gen.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../advanced_setup.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -206,11 +272,11 @@ generator and using your own hand written parser.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../tutorial/009_state_parameter.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../lexer_tutorial/005_external_lib.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../lexer_tutorial/001_lexer_gen.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../advanced_setup.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

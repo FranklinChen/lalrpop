@@ -1,66 +1,66 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Parsing parenthesized numbers</title>
-        
-        
 
 
         <!-- Custom HTML head -->
-        
 
-
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
-        
         <link rel="icon" href="../favicon.svg">
-        
-        
         <link rel="shortcut icon" href="../favicon.png">
-        
         <link rel="stylesheet" href="../css/variables.css">
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
-        
         <link rel="stylesheet" href="../css/print.css" media="print">
-        
 
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        
         <link rel="stylesheet" href="../fonts/fonts.css">
-        
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        
 
-        
         <!-- MathJax -->
-        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
     </head>
     <body>
-        <!-- Provide site root to javascript -->
-        <script type="text/javascript">
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
-        </script>
-
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -73,79 +73,91 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
-            var theme;
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
-            html.classList.remove('no-js')
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            html.classList.add("js");
         </script>
 
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
-            var html = document.querySelector('html');
-            var sidebar = 'hidden';
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../index.html"><strong aria-hidden="true">1.</strong> LALRPOP</a></li><li class="chapter-item expanded "><a href="../crash_course.html"><strong aria-hidden="true">2.</strong> Crash course on parsers</a></li><li class="chapter-item expanded "><a href="../quick_start_guide.html"><strong aria-hidden="true">3.</strong> Quick start guide</a></li><li class="chapter-item expanded "><a href="../tutorial/index.html"><strong aria-hidden="true">4.</strong> Tutorial</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tutorial/001_adding_lalrpop.html"><strong aria-hidden="true">4.1.</strong> Adding LALRPOP to your project</a></li><li class="chapter-item expanded "><a href="../tutorial/002_paren_numbers.html" class="active"><strong aria-hidden="true">4.2.</strong> Parsing parenthesized numbers</a></li><li class="chapter-item expanded "><a href="../tutorial/003_type_inference.html"><strong aria-hidden="true">4.3.</strong> Type inference</a></li><li class="chapter-item expanded "><a href="../tutorial/004_full_expressions.html"><strong aria-hidden="true">4.4.</strong> Handling full expressions</a></li><li class="chapter-item expanded "><a href="../tutorial/005_building_asts.html"><strong aria-hidden="true">4.5.</strong> Building ASTs</a></li><li class="chapter-item expanded "><a href="../tutorial/006_macros.html"><strong aria-hidden="true">4.6.</strong> Macros</a></li><li class="chapter-item expanded "><a href="../tutorial/007_fallible_actions.html"><strong aria-hidden="true">4.7.</strong> Fallible actions</a></li><li class="chapter-item expanded "><a href="../tutorial/008_error_recovery.html"><strong aria-hidden="true">4.8.</strong> Error recovery</a></li><li class="chapter-item expanded "><a href="../tutorial/009_state_parameter.html"><strong aria-hidden="true">4.9.</strong> Passing state parameter</a></li></ol></li><li class="chapter-item expanded "><a href="../lexer_tutorial/index.html"><strong aria-hidden="true">5.</strong> Controlling the lexer</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../lexer_tutorial/001_lexer_gen.html"><strong aria-hidden="true">5.1.</strong> LALRPOP's lexer generator</a></li><li class="chapter-item expanded "><a href="../lexer_tutorial/002_writing_custom_lexer.html"><strong aria-hidden="true">5.2.</strong> Writing a custom lexer</a></li><li class="chapter-item expanded "><a href="../lexer_tutorial/003_token_references.html"><strong aria-hidden="true">5.3.</strong> Using tokens with references</a></li></ol></li><li class="chapter-item expanded "><a href="../advanced_setup.html"><strong aria-hidden="true">6.</strong> Advanced setup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../generate_in_source.html"><strong aria-hidden="true">6.1.</strong> Generate in source tree</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="../misc/contributors.html">Contributors</a></li></ol>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                
                 <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
-                        
                     </div>
 
                     <h1 class="menu-title"></h1>
 
                     <div class="right-buttons">
-                        
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        
-                        
+
                     </div>
                 </div>
 
-                
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -153,10 +165,9 @@
                         </ul>
                     </div>
                 </div>
-                
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -182,10 +193,10 @@ grammar;
 
 pub Term: i32 = {
     &lt;n:Num&gt; =&gt; n,
-    &quot;(&quot; &lt;t:Term&gt; &quot;)&quot; =&gt; t,
+    "(" &lt;t:Term&gt; ")" =&gt; t,
 };
 
-Num: i32 = &lt;s:r&quot;[0-9]+&quot;&gt; =&gt; i32::from_str(s).unwrap();
+Num: i32 = &lt;s:r"[0-9]+"&gt; =&gt; i32::from_str(s).unwrap();
 </code></pre>
 <p>Let's look at this bit by bit. The first part of the file is the <code>use</code>
 statement and the <code>grammar</code> declaration. You'll find these at the top
@@ -207,20 +218,20 @@ defined in terms of other things.</p>
 <p>Let's start with <code>Num</code>, at the end of the file, which is declared
 as follows:</p>
 <pre><code class="language-lalrpop">Num: i32 =
-    &lt;s:r&quot;[0-9]+&quot;&gt; =&gt; i32::from_str(s).unwrap();
+    &lt;s:r"[0-9]+"&gt; =&gt; i32::from_str(s).unwrap();
 </code></pre>
 <p>This declaration says that the type of <code>Num</code> is <code>i32</code>. This means that
 when we parse a <code>Num</code> from the input text, we will produce a value of
-type <code>i32</code>. The definition of <code>Num</code> is <code>&lt;s:r&quot;[0-9]+&quot;&gt;</code>.  Let's look at
-this from the inside out. The notation <code>r&quot;[0-9]+&quot;</code> is a regex literal
+type <code>i32</code>. The definition of <code>Num</code> is <code>&lt;s:r"[0-9]+"&gt;</code>.  Let's look at
+this from the inside out. The notation <code>r"[0-9]+"</code> is a regex literal
 -- this is the same as a Rust raw string. (And, just as in Rust, you
-can use hashes if you need to embed quotes, like <code>r#&quot;...&quot;...&quot;#</code>.)  It
+can use hashes if you need to embed quotes, like <code>r#"..."..."#</code>.)  It
 will match against a string of characters that matches the regular
 expression: in this case, some number of digits. The result of this
 match will be a slice <code>&amp;'input str</code> into the input text that we are
 parsing (no copies are made).</p>
 <p>This regular expression is wrapped in angle brackets and labeled:
-<code>&lt;s:r&quot;[0-9]+&quot;&gt;</code>. In general, angle brackets are used in LALRPOP to
+<code>&lt;s:r"[0-9]+"&gt;</code>. In general, angle brackets are used in LALRPOP to
 indicate the values that will be used by the <em>action code</em> -- that is,
 the code that executes when a <code>Num</code> is parsed.  In this case, the
 string that matches the regular expression is bound to the name <code>s</code>,
@@ -229,7 +240,7 @@ creates an <code>i32</code>. Hence the result of parsing a <code>Num</code> is a
 <p>OK, now let's look at the nonterminal <code>Term</code>:</p>
 <pre><code class="language-lalrpop">pub Term: i32 = {
     &lt;n:Num&gt; =&gt; n,
-    &quot;(&quot; &lt;t:Term&gt; &quot;)&quot; =&gt; t,
+    "(" &lt;t:Term&gt; ")" =&gt; t,
 };
 </code></pre>
 <p>First, this nonterminal is declared as <code>pub</code>. That means that LALRPOP
@@ -240,33 +251,30 @@ outside.</p>
 <p>The <code>Term</code> nonterminal has two alternative definitions, which is
 indicated by writing <code>{ alternative1, alternative2 }</code>. In this case,
 the first alternative is <code>&lt;n:Num&gt;</code>, meaning that a term can be just a
-number; so <code>22</code> is a term. The second alternative is <code>&quot;(&quot; &lt;t:Term&gt; &quot;)&quot;</code>, which indicates that a term can also be a parenthesized term; so
+number; so <code>22</code> is a term. The second alternative is <code>"(" &lt;t:Term&gt; ")"</code>, which indicates that a term can also be a parenthesized term; so
 <code>(22)</code> is a term, as is <code>((22))</code>, <code>((((((22))))))</code>, and so on.</p>
 <p><strong>Invoking the parser.</strong> OK, so we wrote our parser, how do we use it?
 For every nonterminal <code>Foo</code> declared as <code>pub</code>, LALRPOP will export a
 <code>FooParser</code> struct with a <code>parse</code> method that you can call to parse a
-string as that nonterminal. Here is a simple test that we've added to 
+string as that nonterminal. Here is a simple test that we've added to
 our <a href="https://github.com/lalrpop/lalrpop/blob/master/doc/calculator/src/main.rs"><code>main.rs</code></a> file which uses this struct to test our <code>Term</code>
 nonterminal:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>#[macro_use] extern crate lalrpop_util;
+</span>use lalrpop_util::lalrpop_mod;
 
 lalrpop_mod!(pub calculator1); // synthesized by LALRPOP
 
 #[test]
 fn calculator1() {
-    assert!(calculator1::TermParser::new().parse(&quot;22&quot;).is_ok());
-    assert!(calculator1::TermParser::new().parse(&quot;(22)&quot;).is_ok());
-    assert!(calculator1::TermParser::new().parse(&quot;((((22))))&quot;).is_ok());
-    assert!(calculator1::TermParser::new().parse(&quot;((22)&quot;).is_err());
+    assert!(calculator1::TermParser::new().parse("22").is_ok());
+    assert!(calculator1::TermParser::new().parse("(22)").is_ok());
+    assert!(calculator1::TermParser::new().parse("((((22))))").is_ok());
+    assert!(calculator1::TermParser::new().parse("((22)").is_err());
 }
-<span class="boring">}
-</span></code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 <p>The full signature of the parse method looks like this:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn parse&lt;'input&gt;(&amp;self, input: &amp;'input str)
                      -&gt; Result&lt;i32, ParseError&lt;usize,(usize, &amp;'input str),()&gt;&gt;
@@ -278,24 +286,19 @@ fn calculator1() {
 {
     ...
 }
-<span class="boring">}
-</span></code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                        
                             <a rel="prev" href="../tutorial/001_adding_lalrpop.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                        
 
-                        
-                            <a rel="next" href="../tutorial/003_type_inference.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../tutorial/003_type_inference.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
-                        
 
                         <div style="clear: both"></div>
                     </nav>
@@ -303,55 +306,42 @@ fn calculator1() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                
                     <a rel="prev" href="../tutorial/001_adding_lalrpop.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                
 
-                
-                    <a rel="next" href="../tutorial/003_type_inference.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../tutorial/003_type_inference.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
-                
             </nav>
 
         </div>
 
-        
 
-        
 
-        
 
-        
-        <script type="text/javascript">
+        <script>
             window.playground_copyable = true;
         </script>
-        
 
-        
-        <script src="../ace.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../editor.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../mode-rust.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../theme-dawn.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
-        
+        <script src="../ace.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
 
-        
-        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
-        
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
-        
 
-        
 
+
+    </div>
     </body>
 </html>

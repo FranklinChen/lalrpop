@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Passing state parameter</title>
+        <title>Using an external library</title>
 
 
         <!-- Custom HTML head -->
@@ -177,50 +177,301 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="passing-state-parameter"><a class="header" href="#passing-state-parameter">Passing state parameter</a></h1>
-<p>By default, the parser doesn't take any argument other than the input.
-When building the AST, it might be useful to pass parameters to the parser,
-which might be needed to the construction of the tree.</p>
-<p>Going back to the calculator4 example it is possible to pass an argument to the
-parser :</p>
+                        <h1 id="using-an-external-library"><a class="header" href="#using-an-external-library">Using an external library</a></h1>
+<p>Writing a lexer yourself can be tricky. Fortunately, you can find many
+libraries on <a href="https://crates.io">crates.io</a> to generate a lexer for you.</p>
+<p>In this tutorial, we will use <a href="https://docs.rs/logos/latest/logos/">Logos</a> to
+build a simple lexer for a toy programming language. Here is an example of what
+we will be able to parse:</p>
+<pre><code class="language-text">var a = 42;
+var b = 23;
+
+# a comment
+print (a - b);
+</code></pre>
+<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
+<p>In your <code>Cargo.toml</code>, add the following dependency:</p>
+<pre><code class="language-toml">logos = "0.14"
+</code></pre>
+<p>This will provide the <code>logos</code> crate and the <code>Logos</code> trait.</p>
+<h2 id="the-ast"><a class="header" href="#the-ast">The AST</a></h2>
+<p>We will use the following abstract syntax tree (AST) as a representation of our expressions:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>grammar(scale: i32);
-<span class="boring">}</span></code></pre></pre>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>Num: i32 = {
-    r"[0-9]+" =&gt; i32::from_str(&lt;&gt;).unwrap()*scale,
-};
-<span class="boring">}</span></code></pre></pre>
-<p>Here the parser will accept a scale parameter that will scale every number encountered.</p>
-<p>We can then call the parser with the state parameter :</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[test]
-fn calculator8() {
-    let scale = 2;
-    let expr = calculator8::ExprParser::new()
-        .parse(scale,"11 * 22 + 33")
-        .unwrap();
-    assert_eq!(&amp;format!("{:?}", expr), "((22 * 44) + 66)");
+</span>#[derive(Clone, Debug, PartialEq)]
+pub enum Statement {
+  Variable { name: String, value: Box&lt;Expression&gt; },
+  Print { value: Box&lt;Expression&gt; },
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Expression {
+  Integer(i64),
+  Variable(String),
+  BinaryOperation {
+    lhs: Box&lt;Expression&gt;,
+    operator: Operator,
+    rhs: Box&lt;Expression&gt;,
+  },
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Operator {
+  Add,
+  Sub,
+  Mul,
+  Div,
 }
 <span class="boring">}</span></code></pre></pre>
-<p>For a more practical example with a custom tree structure, check out
-<a href="https://github.com/lalrpop/lalrpop/blob/master/lalrpop-test/src/expr_arena.lalrpop">this parser</a> using <a href="https://github.com/lalrpop/lalrpop/blob/master/lalrpop-test/src/expr_arena_ast.rs">this structure</a> to build the
-AST.</p>
-<p>Note: The state parameter must implement the Copy trait.  For types that don't
-implement Copy, you should pass them as a reference instead.</p>
+<h2 id="implement-the-tokenizer"><a class="header" href="#implement-the-tokenizer">Implement the tokenizer</a></h2>
+<p>In a file named <code>tokens.rs</code> (or any other name you want), create an enumeration
+for your tokens, as well as a type for lexing errors:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::fmt;  // to implement the Display trait later
+use std::num::ParseIntError;
+use logos::Logos;
+
+#[derive(Default, Debug, Clone, PartialEq)]
+pub enum LexicalError {
+    InvalidInteger(ParseIntError),
+    #[default]
+    InvalidToken,
+}
+
+impl From&lt;ParseIntError&gt; for LexicalError {
+    fn from(err: ParseIntError) -&gt; Self {
+        LexicalError::InvalidInteger(err)
+    }
+}
+
+#[derive(Logos, Clone, Debug, PartialEq)]
+#[logos(skip r"[ \t\n\f]+", skip r"#.*\n?", error = LexicalError)]
+pub enum Token {
+  #[token("var")]
+  KeywordVar,
+  #[token("print")]
+  KeywordPrint,
+
+  #[regex("[_a-zA-Z][_0-9a-zA-Z]*", |lex| lex.slice().to_string())]
+  Identifier(String),
+  #[regex("[1-9][0-9]*", |lex| lex.slice().parse())]
+  Integer(i64),
+
+  #[token("(")]
+  LParen,
+  #[token(")")]
+  RParen,
+  #[token("=")]
+  Assign,
+  #[token(";")]
+  Semicolon,
+
+  #[token("+")]
+  OperatorAdd,
+  #[token("-")]
+  OperatorSub,
+  #[token("*")]
+  OperatorMul,
+  #[token("/")]
+  OperatorDiv,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>An exact match is specified using the <code>#[token(...)]</code> attribute.</p>
+<p>For example, <code>#[token("+")]</code> makes the <code>OperatorAdd</code> token to be emitted only
+when a literal <code>"+"</code> appears in the input (unless it is part of another match,
+see below).</p>
+<p>On the other hand, <code>#[regex(...)]</code> will match a regular expression.</p>
+<p>The <code>#[logos(...)]</code> attribute around the enum defines regexes to skip when
+parsing the input. We've chosen to skip common whitespace characters, and
+single-line comments of the form <code># ...</code>. It also allows us to specify our
+custom error type, <code>LexicalError</code> if an unexpected token was encountered or if
+parsing an integer fails.</p>
+<p>A few things to note about how <strong>Logos</strong> works:</p>
+<p>When several sequences of tokens can match the same input, Logos uses precise
+rules to make a choice. Rule of thumb is:</p>
+<ul>
+<li>Longer beats shorter.</li>
+<li>Specific beats generic.</li>
+</ul>
+<p>This means the <code>"printa"</code> input string will generate the following token:</p>
+<ul>
+<li><code>Token::Identifier(String::new("printa"))</code></li>
+</ul>
+<p>And not:</p>
+<ul>
+<li><code>Token::KeywordPrint</code></li>
+<li><code>Token::Identifier(String::new("a"))</code></li>
+</ul>
+<p>This is because <code>printa</code> is longer than <code>print</code>, therefore the <code>Identifier</code> rule
+has priority.</p>
+<p>Finally, we implement the <code>Display</code> trait:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl fmt::Display for Token {
+  fn fmt(&amp;self, f: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+    write!(f, "{:?}", self)
+  }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>This is required because the token is included in the error message that
+LALRPOP generates if it fails at parsing.</p>
+<h2 id="implement-the-lexer"><a class="header" href="#implement-the-lexer">Implement the lexer</a></h2>
+<p>This part is very similar to the previous tutorials. In a file <code>lexer.rs</code> (or
+any other name), we will implement the Lexer as required by LALRPOP.</p>
+<p>First, we define our types and structures:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use logos::{Logos, SpannedIter};
+
+use crate::tokens::{Token, LexicalError}; // your Token enum, as above
+
+pub type Spanned&lt;Tok, Loc, Error&gt; = Result&lt;(Loc, Tok, Loc), Error&gt;;
+
+pub struct Lexer&lt;'input&gt; {
+  // instead of an iterator over characters, we have a token iterator
+  token_stream: SpannedIter&lt;'input, Token&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Then, we create the constructor for our Lexer:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;'input&gt; Lexer&lt;'input&gt; {
+  pub fn new(input: &amp;'input str) -&gt; Self {
+    // the Token::lexer() method is provided by the Logos trait
+    Self { token_stream: Token::lexer(input).spanned() }
+  }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Finally, we implement the <code>Iterator</code> trait:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;'input&gt; Iterator for Lexer&lt;'input&gt; {
+  type Item = Spanned&lt;Token, usize, LexicalError&gt;;
+
+  fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+    self.token_stream
+      .next()
+      .map(|(token, span)| Ok((span.start, token?, span.end)))
+  }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="update-the-grammar"><a class="header" href="#update-the-grammar">Update the grammar</a></h2>
+<p>Next, in our <code>grammar.lalrpop</code> file (or any other name), we can integrate our
+lexer as follows:</p>
+<pre><code class="language-lalrpop">use crate::tokens::{Token, LexicalError};
+use crate::ast;
+
+grammar;
+
+// ...
+
+extern {
+  type Location = usize;
+  type Error = LexicalError;
+
+  enum Token {
+    "var" =&gt; Token::KeywordVar,
+    "print" =&gt; Token::KeywordPrint,
+    "identifier" =&gt; Token::Identifier(&lt;String&gt;),
+    "int" =&gt; Token::Integer(&lt;i64&gt;),
+    "(" =&gt; Token::LParen,
+    ")" =&gt; Token::RParen,
+    "=" =&gt; Token::Assign,
+    ";" =&gt; Token::Semicolon,
+    "+" =&gt; Token::OperatorAdd,
+    "-" =&gt; Token::OperatorSub,
+    "*" =&gt; Token::OperatorMul,
+    "/" =&gt; Token::OperatorDiv,
+  }
+}
+</code></pre>
+<p><strong>NB:</strong> This part allows us to give a precise name to the tokens emitted by our
+Lexer. We can then use those names (<code>"identifier"</code>, <code>"var"</code>, ...) in our grammar
+rules to reference the desired token.</p>
+<p>Finally, we can build our rules:</p>
+<pre><code class="language-lalrpop">pub Script: Vec&lt;ast::Statement&gt; = {
+  &lt;stmts:Statement*&gt; =&gt; stmts
+}
+
+pub Statement: ast::Statement = {
+  "var" &lt;name:"identifier"&gt; "=" &lt;value:Expression&gt; ";" =&gt; {
+    ast::Statement::Variable { name, value }
+  },
+  "print" &lt;value:Expression&gt; ";" =&gt; {
+    ast::Statement::Print { value }
+  },
+}
+
+pub Expression: Box&lt;ast::Expression&gt; = {
+  #[precedence(level="1")]
+  Term,
+
+  #[precedence(level="2")] #[assoc(side="left")]
+  &lt;lhs:Expression&gt; "*" &lt;rhs:Expression&gt; =&gt; {
+    Box::new(ast::Expression::BinaryOperation {
+      lhs,
+      operator: ast::Operator::Mul,
+      rhs
+    })
+  },
+  &lt;lhs:Expression&gt; "/" &lt;rhs:Expression&gt; =&gt; {
+    Box::new(ast::Expression::BinaryOperation {
+      lhs,
+      operator: ast::Operator::Div,
+      rhs
+    })
+  },
+
+  #[precedence(level="3")] #[assoc(side="left")]
+  &lt;lhs:Expression&gt; "+" &lt;rhs:Expression&gt; =&gt; {
+    Box::new(ast::Expression::BinaryOperation {
+      lhs,
+      operator: ast::Operator::Add,
+      rhs
+    })
+  },
+  &lt;lhs:Expression&gt; "-" &lt;rhs:Expression&gt; =&gt; {
+    Box::new(ast::Expression::BinaryOperation {
+      lhs,
+      operator: ast::Operator::Sub,
+      rhs
+    })
+  },
+}
+
+pub Term: Box&lt;ast::Expression&gt; = {
+  &lt;val:"int"&gt; =&gt; {
+    Box::new(ast::Expression::Integer(val))
+  },
+  &lt;name:"identifier"&gt; =&gt; {
+    Box::new(ast::Expression::Variable(name))
+  },
+  "(" &lt;Expression&gt; ")",
+}
+</code></pre>
+<p>Our grammar is now complete.</p>
+<h2 id="running-your-parser"><a class="header" href="#running-your-parser">Running your parser</a></h2>
+<p>The last step is to run our parser:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let source_code = std::fs::read_to_string("myscript.toy")?;
+let lexer = Lexer::new(&amp;source_code);
+let parser = ScriptParser::new();
+let ast = parser.parse(lexer)?;
+
+println!("{:?}", ast);
+<span class="boring">}</span></code></pre></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../tutorial/008_error_recovery.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../lexer_tutorial/004_token_references.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../lexer_tutorial/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../lexer_tutorial/006_error_recovery_custom_lexer.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -230,11 +481,11 @@ implement Copy, you should pass them as a reference instead.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../tutorial/008_error_recovery.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../lexer_tutorial/004_token_references.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../lexer_tutorial/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../lexer_tutorial/006_error_recovery_custom_lexer.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

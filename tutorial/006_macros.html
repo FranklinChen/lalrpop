@@ -1,66 +1,66 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Macros</title>
-        
-        
 
 
         <!-- Custom HTML head -->
-        
 
-
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
-        
         <link rel="icon" href="../favicon.svg">
-        
-        
         <link rel="shortcut icon" href="../favicon.png">
-        
         <link rel="stylesheet" href="../css/variables.css">
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
-        
         <link rel="stylesheet" href="../css/print.css" media="print">
-        
 
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        
         <link rel="stylesheet" href="../fonts/fonts.css">
-        
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        
 
-        
         <!-- MathJax -->
-        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
     </head>
     <body>
-        <!-- Provide site root to javascript -->
-        <script type="text/javascript">
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
-        </script>
-
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -73,79 +73,91 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
-            var theme;
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
-            html.classList.remove('no-js')
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            html.classList.add("js");
         </script>
 
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
-            var html = document.querySelector('html');
-            var sidebar = 'hidden';
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../index.html"><strong aria-hidden="true">1.</strong> LALRPOP</a></li><li class="chapter-item expanded "><a href="../crash_course.html"><strong aria-hidden="true">2.</strong> Crash course on parsers</a></li><li class="chapter-item expanded "><a href="../quick_start_guide.html"><strong aria-hidden="true">3.</strong> Quick start guide</a></li><li class="chapter-item expanded "><a href="../tutorial/index.html"><strong aria-hidden="true">4.</strong> Tutorial</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tutorial/001_adding_lalrpop.html"><strong aria-hidden="true">4.1.</strong> Adding LALRPOP to your project</a></li><li class="chapter-item expanded "><a href="../tutorial/002_paren_numbers.html"><strong aria-hidden="true">4.2.</strong> Parsing parenthesized numbers</a></li><li class="chapter-item expanded "><a href="../tutorial/003_type_inference.html"><strong aria-hidden="true">4.3.</strong> Type inference</a></li><li class="chapter-item expanded "><a href="../tutorial/004_full_expressions.html"><strong aria-hidden="true">4.4.</strong> Handling full expressions</a></li><li class="chapter-item expanded "><a href="../tutorial/005_building_asts.html"><strong aria-hidden="true">4.5.</strong> Building ASTs</a></li><li class="chapter-item expanded "><a href="../tutorial/006_macros.html" class="active"><strong aria-hidden="true">4.6.</strong> Macros</a></li><li class="chapter-item expanded "><a href="../tutorial/007_fallible_actions.html"><strong aria-hidden="true">4.7.</strong> Fallible actions</a></li><li class="chapter-item expanded "><a href="../tutorial/008_error_recovery.html"><strong aria-hidden="true">4.8.</strong> Error recovery</a></li><li class="chapter-item expanded "><a href="../tutorial/009_state_parameter.html"><strong aria-hidden="true">4.9.</strong> Passing state parameter</a></li></ol></li><li class="chapter-item expanded "><a href="../lexer_tutorial/index.html"><strong aria-hidden="true">5.</strong> Controlling the lexer</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../lexer_tutorial/001_lexer_gen.html"><strong aria-hidden="true">5.1.</strong> LALRPOP's lexer generator</a></li><li class="chapter-item expanded "><a href="../lexer_tutorial/002_writing_custom_lexer.html"><strong aria-hidden="true">5.2.</strong> Writing a custom lexer</a></li><li class="chapter-item expanded "><a href="../lexer_tutorial/003_token_references.html"><strong aria-hidden="true">5.3.</strong> Using tokens with references</a></li></ol></li><li class="chapter-item expanded "><a href="../advanced_setup.html"><strong aria-hidden="true">6.</strong> Advanced setup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../generate_in_source.html"><strong aria-hidden="true">6.1.</strong> Generate in source tree</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="../misc/contributors.html">Contributors</a></li></ol>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                
                 <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
-                        
                     </div>
 
                     <h1 class="menu-title"></h1>
 
                     <div class="right-buttons">
-                        
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        
-                        
+
                     </div>
                 </div>
 
-                
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -153,10 +165,9 @@
                         </ul>
                     </div>
                 </div>
-                
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -169,12 +180,12 @@
                         <h1 id="macros"><a class="header" href="#macros">Macros</a></h1>
 <p>Frequently when writing grammars we encounter repetitive constructs
 that we would like to copy-and-paste. A common example is defining
-something like a &quot;comma-separated list&quot;. Imagine we wanted to parse a
+something like a "comma-separated list". Imagine we wanted to parse a
 comma-separated list of expressions (with an optional trailing comma,
 of course).  If we had to write this out in full, it would look
 something like:</p>
 <pre><code class="language-lalrpop">Exprs: Vec&lt;Box&lt;Expr&gt;&gt; = {
-    Exprs &quot;,&quot; Expr =&gt; ...,
+    Exprs "," Expr =&gt; ...,
     Expr =&gt; vec![&lt;&gt;],
 }
 </code></pre>
@@ -185,15 +196,15 @@ want a comma-separated list of terms? Do we just copy-and-paste
 everything?</p>
 <p>LALRPOP offers a better option. You can define macros. In fact,
 LALRPOP comes with four macros builtin: <code>*</code>, <code>?</code>, <code>+</code>, and <code>(...)</code>. So
-you can write something like <code>Expr?</code> to mean &quot;an optional
-<code>Expr</code>&quot;. This will have type <code>Option&lt;Box&lt;Expr&gt;&gt;</code> (since <code>Expr</code> alone
+you can write something like <code>Expr?</code> to mean "an optional
+<code>Expr</code>". This will have type <code>Option&lt;Box&lt;Expr&gt;&gt;</code> (since <code>Expr</code> alone
 has type <code>Box&lt;Expr&gt;</code>).  Similarly, you can write <code>Expr*</code> or <code>Expr+</code> to
 get a <code>Vec&lt;Expr&gt;</code> (with minimum length 0 and 1 respectively). The
 final macro is parentheses, which is a shorthand for creating a new
-nonterminal.  This lets you write things like <code>(&lt;Expr&gt; &quot;,&quot;)?</code> to mean
-an &quot;optionally parse an <code>Expr</code> followed by a comma&quot;. Note the angle
-brackets around <code>Expr</code>: these ensures that the value of the <code>(&lt;Expr&gt; &quot;,&quot;)</code> is the value of the expression, and not a tuple of the
-expression and the comma. This means that <code>(&lt;Expr&gt; &quot;,&quot;)?</code> would have
+nonterminal.  This lets you write things like <code>(&lt;Expr&gt; ",")?</code> to mean
+an "optionally parse an <code>Expr</code> followed by a comma". Note the angle
+brackets around <code>Expr</code>: these ensures that the value of the <code>(&lt;Expr&gt; ",")</code> is the value of the expression, and not a tuple of the
+expression and the comma. This means that <code>(&lt;Expr&gt; ",")?</code> would have
 the type <code>Option&lt;Box&lt;Expr&gt;&gt;</code> (and not <code>Option&lt;(Box&lt;Expr&gt;, &amp;'input str)&gt;</code>).</p>
 <p>Using these operations we can define <code>Exprs</code> in terms of a macro
 <code>Comma&lt;T&gt;</code> that creates a comma-separated list of <code>T</code>, whatever <code>T</code> is
@@ -201,7 +212,7 @@ the type <code>Option&lt;Box&lt;Expr&gt;&gt;</code> (and not <code>Option&lt;(Bo
 <pre><code class="language-lalrpop">pub Exprs = Comma&lt;Expr&gt;; // (0)
 
 Comma&lt;T&gt;: Vec&lt;T&gt; = { // (1)
-    &lt;mut v:(&lt;T&gt; &quot;,&quot;)*&gt; &lt;e:T?&gt; =&gt; match e { // (2)
+    &lt;mut v:(&lt;T&gt; ",")*&gt; &lt;e:T?&gt; =&gt; match e { // (2)
         None =&gt; v,
         Some(e) =&gt; {
             v.push(e);
@@ -215,17 +226,17 @@ just uses a macro <code>Comma&lt;Expr&gt;</code>. Let's take a look then at the
 definition of <code>Comma&lt;T&gt;</code> on line (1). This is sort of dense, so let's
 unpack it. First, <code>T</code> is some terminal or nonterminal, but note that
 we can also use it as a type: when the macro is expanded, the <code>T</code> in
-the type will be replaced with &quot;whatever the type of <code>T</code> is&quot;.</p>
-<p>Next, on (2), we parse <code>&lt;mut v:(&lt;T&gt; &quot;,&quot;)*&gt; &lt;e:T?&gt;</code>.  That's a lot of
+the type will be replaced with "whatever the type of <code>T</code> is".</p>
+<p>Next, on (2), we parse <code>&lt;mut v:(&lt;T&gt; ",")*&gt; &lt;e:T?&gt;</code>.  That's a lot of
 symbols, so let's first remove all the angle brackets, which just
 serve to tell LALRPOP what values you want to propagate and which you
-want to discard. In that case, we have: <code>(T &quot;,&quot;)* T?</code>. Hopefully you
+want to discard. In that case, we have: <code>(T ",")* T?</code>. Hopefully you
 can see that this matches a comma-separated list with an optional
 trailing comma. Now let's add those angle-brackets back in. In the
-parentheses, we get <code>(&lt;T&gt; &quot;,&quot;)*</code> -- this just means that we keep the
+parentheses, we get <code>(&lt;T&gt; ",")*</code> -- this just means that we keep the
 value of the <code>T</code> but discard the value of the comma when we build our
 vector. Then we capture that vector and call it <code>v</code>:
-<code>&lt;mut v:(&lt;T&gt; &quot;,&quot;)*&gt;</code>.  The <code>mut</code> makes <code>v</code> mutable in the action code.
+<code>&lt;mut v:(&lt;T&gt; ",")*&gt;</code>.  The <code>mut</code> makes <code>v</code> mutable in the action code.
 Finally, we capture the optional trailing element <code>e</code>: <code>&lt;e:T?&gt;</code>. This
 means the Rust code has two variables available to it, <code>v: Vec&lt;T&gt;</code> and
 <code>e: Option&lt;T&gt;</code>. The action code itself should then be fairly clear --
@@ -243,66 +254,60 @@ Expr = Tier&lt;ExprOp, Factor&gt;;
 Factor = Tier&lt;FactorOp, Term&gt;;
 
 ExprOp: Opcode = { // (3)
-    &quot;+&quot; =&gt; Opcode::Add,
-    &quot;-&quot; =&gt; Opcode::Sub,
+    "+" =&gt; Opcode::Add,
+    "-" =&gt; Opcode::Sub,
 };
 
 FactorOp: Opcode = {
-    &quot;*&quot; =&gt; Opcode::Mul,
-    &quot;/&quot; =&gt; Opcode::Div,
+    "*" =&gt; Opcode::Mul,
+    "/" =&gt; Opcode::Div,
 };
 </code></pre>
 <p>And, of course, we have to add some tests to <a href="https://github.com/lalrpop/lalrpop/blob/master/doc/calculator/src/main.rs">main.rs file</a>:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>#[macro_use] extern crate lalrpop_util;
+</span>use lalrpop_util::lalrpop_mod;
 
 lalrpop_mod!(pub calculator5);
 
 #[test]
 fn calculator5() {
-    let expr = calculator5::ExprsParser::new().parse(&quot;&quot;).unwrap();
-    assert_eq!(&amp;format!(&quot;{:?}&quot;, expr), &quot;[]&quot;);
+    let expr = calculator5::ExprsParser::new().parse("").unwrap();
+    assert_eq!(&amp;format!("{:?}", expr), "[]");
 
     let expr = calculator5::ExprsParser::new()
-        .parse(&quot;22 * 44 + 66&quot;)
+        .parse("22 * 44 + 66")
         .unwrap();
-    assert_eq!(&amp;format!(&quot;{:?}&quot;, expr), &quot;[((22 * 44) + 66)]&quot;);
+    assert_eq!(&amp;format!("{:?}", expr), "[((22 * 44) + 66)]");
 
     let expr = calculator5::ExprsParser::new()
-        .parse(&quot;22 * 44 + 66,&quot;)
+        .parse("22 * 44 + 66,")
         .unwrap();
-    assert_eq!(&amp;format!(&quot;{:?}&quot;, expr), &quot;[((22 * 44) + 66)]&quot;);
+    assert_eq!(&amp;format!("{:?}", expr), "[((22 * 44) + 66)]");
 
     let expr = calculator5::ExprsParser::new()
-        .parse(&quot;22 * 44 + 66, 13*3&quot;)
+        .parse("22 * 44 + 66, 13*3")
         .unwrap();
-    assert_eq!(&amp;format!(&quot;{:?}&quot;, expr), &quot;[((22 * 44) + 66), (13 * 3)]&quot;);
+    assert_eq!(&amp;format!("{:?}", expr), "[((22 * 44) + 66), (13 * 3)]");
 
     let expr = calculator5::ExprsParser::new()
-        .parse(&quot;22 * 44 + 66, 13*3,&quot;)
+        .parse("22 * 44 + 66, 13*3,")
         .unwrap();
-    assert_eq!(&amp;format!(&quot;{:?}&quot;, expr), &quot;[((22 * 44) + 66), (13 * 3)]&quot;);
+    assert_eq!(&amp;format!("{:?}", expr), "[((22 * 44) + 66), (13 * 3)]");
 }
-<span class="boring">}
-</span></code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                        
                             <a rel="prev" href="../tutorial/005_building_asts.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                        
 
-                        
-                            <a rel="next" href="../tutorial/007_fallible_actions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../tutorial/007_fallible_actions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
-                        
 
                         <div style="clear: both"></div>
                     </nav>
@@ -310,55 +315,42 @@ fn calculator5() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                
                     <a rel="prev" href="../tutorial/005_building_asts.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                
 
-                
-                    <a rel="next" href="../tutorial/007_fallible_actions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../tutorial/007_fallible_actions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
-                
             </nav>
 
         </div>
 
-        
 
-        
 
-        
 
-        
-        <script type="text/javascript">
+        <script>
             window.playground_copyable = true;
         </script>
-        
 
-        
-        <script src="../ace.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../editor.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../mode-rust.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../theme-dawn.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
-        
+        <script src="../ace.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
 
-        
-        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
-        
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
-        
 
-        
 
+
+    </div>
     </body>
 </html>
